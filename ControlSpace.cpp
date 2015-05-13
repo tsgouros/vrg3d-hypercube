@@ -42,7 +42,7 @@ void ControlSpace::do_intersection(Vector3 start, Vector3 end)
   Vector3 result;
   Vector3 pos;
 
-  //  cout<<"ControlSpace::do_intersection"<<start << "::" << end << endl;
+  //cout<<"ControlSpace::do_intersection"<<start << "::" << end << endl;
   assert(_tetra);
   if (_tetra->intersect(start, end, &result)) {
     _a = result[0]; // get the result from tetrahedron

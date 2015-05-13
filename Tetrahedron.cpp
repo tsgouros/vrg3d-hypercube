@@ -217,7 +217,7 @@ void Tetrahedron::draw()
 
 bool Tetrahedron::intersect(Vector3 start, Vector3 end, Vector3* abc_result) 
 {
-#if 1
+#if 0
   return false;
 #else
   //  cout<<"Tetrahedron::intersect" << endl;
@@ -228,7 +228,8 @@ bool Tetrahedron::intersect(Vector3 start, Vector3 end, Vector3* abc_result)
   
   // for its own draw routine..
   
-  Vector3 tend = MathTranslate::instance()->ROOM_TO_WORLD() * end;
+  //Vector3 tend = MathTranslate::instance()->ROOM_TO_WORLD() * end;
+  Vector3 tend = end;
   //  intersection_point = Vector3(0,0,0);
 
   Vector3 io_result;

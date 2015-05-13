@@ -73,7 +73,7 @@ public:
     // board, which is confusing for the viewer on startup, and
     // renders poorly too. Let's move the virtual space up a few units
     // for a more sensible view.
-    _virtualToRoomSpace = CoordinateFrame(Vector3(0,-3.0,0)) * _virtualToRoomSpace;
+    _virtualToRoomSpace = CoordinateFrame(Vector3(0,2.0,0)) * _virtualToRoomSpace;
 
     // This is the background -- the color that appears where there is
     // nothing to render, and we'll use a nice soothing blue.
@@ -91,7 +91,7 @@ public:
 
     //    wandInt = new SimpleInt(control, this);
 
-    draw_mode = DRAW_HYPERCUBE;
+    draw_mode = DRAW_HYPERCUBE_TORUS_HOPF;
 
 #if 0
     // TODO: figure out how interaction is done in VRG3D....
@@ -281,7 +281,18 @@ public:
     }
      
     }  
+    Array<std::string> trackerNames = _trackerFrames.getKeys();
+
+    for (int i=0;i<trackerNames.size();i++)
+    {  CoordinateFrame trackerFrame = _trackerFrames[trackerNames[i]];
     
+        // Draw laser pointer.
+        if (trackerNames[i] == "Wand_Tracker") {
+            Vector3 lookVector = trackerFrame.lookVector();
+            control->do_intersection(trackerFrame.translation, trackerFrame.translation+(1*lookVector));
+        }
+    }
+
   }
 
   void doGraphics(RenderDevice *rd)
@@ -290,7 +301,7 @@ public:
     // in the current directory and then in $G/src/VRG3D/share/
     //
     while(glGetError() != GL_NO_ERROR)
-    {  std::cout<<"Flushing gl errors"<<std::endl;
+    {  //std::cout<<"Flushing gl errors"<<std::endl;
     }
 
     if (_font.isNull())
@@ -315,23 +326,22 @@ public:
 
             glDisable(GL_LIGHTING);
             glDisable(GL_TEXTURE_2D);
-            glLineWidth(2.0f);
+            glLineWidth(4.0f);
             glColor4f(1.0f,0.0f,0.0f,1.0f);
             glBegin(GL_LINES);
             glVertex3f(trackerFrame.translation.x,
                        trackerFrame.translation.y,
                        trackerFrame.translation.z);
-            glVertex3f(trackerFrame.translation.x + 6.0 * lookVector.x,
-                       trackerFrame.translation.y + 6.0 * lookVector.y,
-                       trackerFrame.translation.z + 6.0 * lookVector.z);
+            glVertex3f(trackerFrame.translation.x + 1 * lookVector.x,
+                       trackerFrame.translation.y + 1 * lookVector.y,
+                       trackerFrame.translation.z + 1 * lookVector.z);
             glEnd();
 
             glPopAttrib();
 
        }
 
-    }
-
+  }
 
     // The tracker frames above are drawn with the object to world
     // matrix set to the identity because tracking data comes into the
@@ -364,7 +374,7 @@ public:
     /*  These functions change how the object gets drawn */
     glEnable (GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
-    //glEnable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
     glEnable (GL_LIGHTING);
     glEnable (GL_LIGHT0);
 
@@ -405,7 +415,7 @@ public:
 
     //    wandInt->drawWand();
 
-    control->draw();
+ 
 
     switch(draw_mode) {
 
@@ -438,6 +448,12 @@ public:
     // END hypercube draw
         
     rd->popState();
+
+    rd->pushState();
+    glTranslatef(0.0, 2.0, 0.0);
+
+       control->draw();
+    rd->popState();
   }
 
   void update_geometry() {
@@ -454,7 +470,7 @@ public:
 
   void draw_text()
   {
-    std::cerr << "hypercube_demo.cpp: draw_text not implemented..." << std::endl;
+    //std::cerr << "hypercube_demo.cpp: draw_text not implemented..." << std::endl;
 #if 0
     Wtransf myMat = Wtransf::align(Wpt(0,0,0),Wvec(1,0,0),Wvec(0,1,0),
 				   Wpt(0,0,0),Wvec(1,0,0),Wvec(0,-1,0))*

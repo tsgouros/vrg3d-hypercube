@@ -295,7 +295,7 @@ void Torus::draw() {
   glPushMatrix();
   //  glMultMatrixd(MathTranslate::instance()->ROOM_TO_WORLD().invert().matrix());
   //glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
-  std::cerr << "Torus.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
+//  std::cerr << "Torus.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
 
   glBegin(GL_TRIANGLES);
 

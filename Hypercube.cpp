@@ -285,7 +285,7 @@ void Hypercube::draw() {
   glPushMatrix();
   //  glMultMatrixd(MathTranslate::instance()->ROOM_TO_WORLD().invert().matrix());
   //glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
-  std::cerr << "Hypercube.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
+//  std::cerr << "Hypercube.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
   
   glTranslatef(5,0,0); // draw the hypercube off to the side
 

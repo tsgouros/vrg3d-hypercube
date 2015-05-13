@@ -333,7 +333,7 @@ void Hopf::draw() {
   glPushMatrix();
   //  glMultMatrixd(MathTranslate::instance()->ROOM_TO_WORLD().invert().matrix());
 //  glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
-  std::cerr << "Hopf.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
+//  std::cerr << "Hopf.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
 
   glTranslatef(-10,0,0);
 
