@@ -1,0 +1,121 @@
+#
+# CONFIGval name/value pairs
+#
+
+#device_list	isense  \
+#		isense_wand_2d \
+#		isense_wand \
+#		polhemus \
+#		wanda wanda_2d \
+#		isense_stylus \
+#		wall_clock
+
+#wall_clock_source  DEV_WALL_CLOCK
+
+
+#filter_list 	stylus_pb1\
+#		stylus_pb2\
+#		2dtobtn\
+#		2dtobtnb
+
+stylus_pb1_source	FILTER_PROXIMITY_BUTTON
+stylus_pb1_btn		wanda_but_red
+stylus_pb1_tracker1	wand_optitrack2
+stylus_pb1_tracker2	wand_optitrack3
+wand_tracker		wand_optitrack3
+stylus_pb1_near		wanda_but_red_near
+stylus_pb1_far		wanda_but_red_far
+
+stylus_pb2_source	FILTER_PROXIMITY_BUTTON
+stylus_pb2_btn		wanda_but_yellow
+stylus_pb2_tracker1	wand_optitrack2
+stylus_pb2_tracker2	wand_optitrack3
+stylus_pb2_near		wanda_but_yellow_near
+stylus_pb2_far		wanda_but_yellow_far
+
+2dtobtn_source		FILTER_2D_TO_BUTTON
+2dtobtn_2d		isense_wand_dev2d
+2dtobtn_up		isense_wand_up
+2dtobtn_down		isense_wand_down
+2dtobtn_left		isense_wand_left
+2dtobtn_right		isense_wand_right
+2dtobtn_center		isense_wand_center
+
+2dtobtnb_source		FILTER_2D_TO_BUTTON
+2dtobtnb_2d		wanda_2d
+2dtobtnb_up		wanda_2d_up
+2dtobtnb_down		wanda_2d_down
+2dtobtnb_left		wanda_2d_left
+2dtobtnb_right		wanda_2d_right
+2dtobtnb_center		wanda_2d_center
+
+
+
+HEAD_6DOF		head_optitrack1
+UGR_HEAD		head_optitrack1
+#HEAD_6DOF		head_isense
+
+
+
+# Offset these positions to make them appear in front of the trackers
+
+isense_0_physCS_to_appCS	[[1,0,0,0][0,1,0,0][0,0,1,0.1][0,0,0,1]]
+isense_2_physCS_to_appCS	[[1,0,0,0][0,1,0,0][0,0,1,0.0][0,0,0,1]]
+###polhemus tracker is installed upside down in the wanda
+polhemus_3_physCS_to_appCS	[[-1,0,0,0][0,-1,0,0][0,0,1,0.8][0,0,0,1]]
+
+
+# Cave sound server configuration
+USE_SOUNDSERVER		1
+SOUNDSERVER_HOST	audio-cave
+SOUNDSERVER_PORT	6666
+
+
+
+
+
+##########################
+###Tracker Config#########
+##########################
+
+# Left Hand
+
+GRAB_NAV_BTN            wanda_but_red_far
+BRUSH_SIZE_BTN_DOWN     wanda_but_red_near
+BRUSH_SIZE_BTN_UP       wanda_but_red
+
+DEFAULT_CURSOR_6DOF     wand_optitrack2
+BRUSH_SIZE_TRACKER1     wand_optitrack2
+GRAB_NAV_6DOF           wand_optitrack2
+brushModeMenu_TRACKER	wand_optitrack2
+UGR_HAND		wand_optitrack2
+
+# Right Hand
+
+mainFSA_menu_ACTION	isense_wand_but_1
+mainFSA_brush_ACTION	isense_wand_but_1
+
+BRUSH_6DOF              wand_optitrack2
+BRUSHICON_6DOF		wand_optitrack2
+SELECTOR6D_TRACKER      wand_optitrack2
+COLORPICK_6DOF          wand_optitrack2
+BRUSH_SIZE_TRACKER2     
+TEXPALETTE_6DOF         wand_optitrack2
+SE_TRACKER              wand_optitrack2
+MENU_TRACKER		wand_optitrack2
+
+
+
+
+# Extra Buttons..
+
+WORLD_SCALE_UP_BTN      isense_wand_up
+OBJECT_SCALE_UP_BTN     isense_wand_up
+WORLD_SCALE_DOWN_BTN    isense_wand_down
+OBJECT_SCALE_DOWN_BTN   isense_wand_down
+
+DENSITY_UP_BTN          kbd_]
+DENSITY_DOWN_BTN        kbd_[
+
+brushModeMenu_XFORM      [[0,0,-1,0][1,0,0,0][0,-1,0,0][0,0,0,1]]
+
