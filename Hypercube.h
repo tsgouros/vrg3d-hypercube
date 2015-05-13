@@ -2,7 +2,11 @@
 #ifndef _HYPERCUBE_H
 #define _HYPERCUBE_H
 
-#include "ISMesh.H"
+//#include "ISMesh.H"
+#include <vrg3d/VRG3D.h>
+#include <vector>
+
+using namespace G3D;
 
 class Hypercube {
 
@@ -18,12 +22,12 @@ private:
   
   void calculate_geometry(); // this will calculate the geometry for _a,_b,_c
 
-  ARRAY<Wpt> _face_vertices; 
-  ARRAY<Wpt> _line_vertices;
-  ARRAY<Wvec> _normals;
+  std::vector<Vector3> _face_vertices; 
+  std::vector<Vector3> _line_vertices;
+  std::vector<Vector3> _normals;
 
-  ARRAY<Wpt> _line_colors;
-  ARRAY<Wpt> _face_colors;
+  std::vector<Vector3> _line_colors;
+  std::vector<Vector3> _face_colors;
 
   int first; // for first time flag
 public:

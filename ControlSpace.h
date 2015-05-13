@@ -2,19 +2,20 @@
 #ifndef _CONTROL_H
 #define _CONTROL_H
 
-#include "ISMesh.H"
+//#include "ISMesh.H"
+#include <vrg3d/VRG3D.h>
 
 //#include "Torus.H"
 //#include "Hypercube.H"
 //#include "Hopf.H"
 
-#include "Tetrahedron.H"
+#include "Tetrahedron.h"
 
 class ControlSpace {
 
 private:
 
-  Wpt global_pos;
+  Vector3 global_pos;
 
   double _a,_b,_c; // 4D co-ordinates of the control space; internal
 
@@ -40,7 +41,7 @@ public:
    
   // wand will provide a World space line segment
   // use this to set the internal a,b,c values
-  void do_intersection(Wpt start, Wpt end);
+  void do_intersection(Vector3 start, Vector3 end);
   
   // draw the control space tetrahedron 
   // AND a sphere corresponding to a,b,c

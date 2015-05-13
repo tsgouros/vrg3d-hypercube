@@ -1,72 +1,63 @@
-SHELL=/bin/sh
+CPP = g++
+CPPFLAGS = -Wall -g
+LDFLAGS = 
 
-PROJECT_NAME = test-inspace
-PROJECT_VER =-2.0
+TARGET = chess demo hypercube
+
+
+### These lines are for access to the VRG3D and G3D installation
+### directories. All other necessary software is assumed to be
+### installed in the system-wide directories.
+
+ifeq ($(shell if [ -d /research/graphics ] ; then echo 1; fi),1)
+  # CS Dept
+  EXTRA_INCLUDES = -I$(G)/install_linux/include -I$(G)/install_linux/include/vrg3d
+  EXTRA_LIBS = -L$(G)/install_linux/lib -L$(G)/install_linux/lib/vrg3d
+else
+  # CCV - Granoff
+  EXTRA_INCLUDES = -I/share/cave/include
+  EXTRA_LIBS = -L/share/cave/lib
+endif
+
+
 OBJDIR = obj
 
-# specify project files
-SRC = main.C Torus.C Hypercube.C Hopf.C TestApp.C SimpleInt.C ControlSpace.C Utility.C Tetrahedron.C
-DOC = $(PROJECT_NAME).txt
-CONFIG = glueconfig glueconfig-cave-devices glueconfig-icubex-test \
-	 glueconfig-cave-btntest glueconfig-cave-devtest cloth1.rgb
+SRCS = $(shell ls *.cpp)
 
-DEFINES = USE_GLUT 
+OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
 
-# library version numbers
-GLUE_VER =      -double-2.0
-INSPACE_VER = 	-2.0
+INCLUDE_DIRS = -I. $(EXTRA_INCLUDES)
 
-G_INCLUDE_DIRS =	. gluebase$(GLUE_VER) inspace$(INSPACE_VER)
-INCLUDE_DIRS =		.  ../gluebase-2.0 ../inspace-2.0 ..
+LIB_DIRS = $(EXTRA_LIBS)
 
+LIBS = -Xlinker --start-group  -Xlinker -ldl  -Xlinker -lX11 -Xlinker \
+	-lXext  -Xlinker -lpthread  -Xlinker -lz  -Xlinker -ljpeg  -Xlinker \
+	-lpng  -Xlinker -lzip  -Xlinker -lSDL -Xlinker -lvrg3d  -Xlinker \
+	-lavutil  -Xlinker -lavformat  -Xlinker -lavcodec  -Xlinker -lGLG3Dd \
+	-Xlinker -lG3Dd -Xlinker -lGLU -Xlinker -lGL -Xlinker --end-group \
+	-lvrpn -lglut -lXmu
 
+all: chess demo hypercube
 
-# subdirs of $G/lib to include in the lib path
-#G_LIB_DIRS = ../src/inspace-2.0/obj/ . gluebase$(GLUE_VER)
-LIB_DIRS = ../lib
+chess: obj/chess.o obj/chess_demo.o
+	$(CPP) $(LDFLAGS) -o chess $^ $(LIB_DIRS) $(LIBS)
 
-ifneq ($(findstring USE_OPENAL,$(DEFINES)),) 
-  G_LIB_DIRS := $(G_LIB_DIRS) openal
-endif
+demo: obj/vrg3d_demo.o
+	$(CPP) $(LDFLAGS) -o demo $^ $(LIB_DIRS) $(LIBS)
 
-# static libs to link in in debugging/opt/profiling cases
-DEBUG_LIBS =   	ggargs-d inspace$(INSPACE_VER)-d ivrnav-1.0-d
-OPT_LIBS =      ggargs inspace$(INSPACE_VER) ivrnav-1.0
-PROF_LIBS =     ggargs-p inspace$(INSPACE_VER)-p ivrnav-1.0-p
-
-# shared libs to link in in debugging/opt/profiling cases
-DEBUG_SHLIBS =  gluebase$(GLUE_VER)-sd
-OPT_SHLIBS =    gluebase$(GLUE_VER)-s
-PROF_SHLIBS =   gluebase$(GLUE_VER)-sp
-
-# sometimes, there are architecture specific libs to link or 
-# directories to include in the link path..
-ifeq ($(GARCH),linux)
-#  LIB_DIRS = /usr/X11R6/lib
-  LIBS := $(LIBS) GLU GL glut X11 Xext Xmu pthread 
-  ifneq ($(findstring USE_OPENAL,$(DEFINES)),) 
-    LIBS := $(LIBS) openal
-  endif
-endif
+#hypercube: obj/hypercube.o obj/hypercube_demo.o obj/Utility.o obj/Tetrahedron.o obj/ControlSpace.o
+hypercube: obj/hypercube_demo.o obj/Utility.o obj/Tetrahedron.o obj/ControlSpace.o \
+           obj/Hopf.o obj/Hypercube.o obj/Torus.o obj/SimpleInt.o
+	$(CPP) $(LDFLAGS) -o hypercube $^ $(LIB_DIRS) $(LIBS)
 
 
+#$(TARGET) : $(OBJS) 
+#	$(CPP) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIB_DIRS) $(LIBS)
 
-all:	     progg
-debug dbg:   progg 
-opt:	     progo 
-prof:	     progp
+$(OBJDIR)/%.o: %.cpp
+	mkdir -p $(OBJDIR)
+	$(CPP) $(CPPFLAGS) -c $< -o $@ $(INCLUDE_DIRS)
 
-install:     inst-doc inst-config inst-prog
-	gfxinstall3 -q cavebtntest   	    bin/cavebtntest
-	gfxinstall3 -q cavebtntest-window   bin/cavebtntest-window
-	gfxinstall3 -q cavedevtest   	    bin/cavedevtest
-	gfxinstall3 -q cavedevtest-window   bin/cavedevtest-window
-
-relink:	     FORCE
-	     rm -f $(PROGO) $(PROGG) $(PROGP)
-	     $(MAKE) debug
-
-
-include $(G)/Make.gfxtools.rules
--include Makefile.depend
-
+clean:
+	rm -f $(TARGET) $(OBJDIR)/*.o demo-log.txt
+	rm -rf $(OBJDIR)

@@ -2,7 +2,11 @@
 #ifndef _TORUS_H
 #define _TORUS_H
 
-#include "ISMesh.H"
+//#include "ISMesh.H"
+#include <vrg3d/VRG3D.h>
+
+using namespace G3D;
+
 
 class Torus {
 
@@ -18,9 +22,9 @@ private:
   
   void calculate_geometry(); // this will calculate the geometry for _a,_b,_c
 
-  ARRAY<Wpt> _vertices;
-  ARRAY<Wvec> _normals;
-  ARRAY<Wpt> _colors;
+  std::vector<Vector3> _vertices;
+  std::vector<Vector3> _normals;
+  std::vector<Vector3> _colors;
 
   int first; // for first time flag
 public:

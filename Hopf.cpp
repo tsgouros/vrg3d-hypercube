@@ -1,7 +1,8 @@
 
-#include "Hopf.H"
+//#include "Hopf.H"
+#include "Hopf.h"
 
-#include "WorldTranslate.H"
+//#include "WorldTranslate.H"
 
 Hopf::Hopf() {
   
@@ -150,8 +151,8 @@ void Hopf::calculate_geometry() {
   double xx3,yy3,uu3,vv3;
   double xx4,yy4,uu4,vv4;
 
-  Wpt pt1, pt2, pt3;
-  Wvec norm1, norm2, ncross;
+  Vector3 pt1, pt2, pt3;
+  Vector3 norm1, norm2, ncross;
 
   double x1,x2,x3,x4;
   double y1,y2,y3,y4;
@@ -161,11 +162,11 @@ void Hopf::calculate_geometry() {
   double d,den;
   
 
-  if (_vertices.num()>0)
+  if (_vertices.size()>0)
     _vertices.clear();
-  if (_normals.num()>0) 
+  if (_normals.size()>0) 
     _normals.clear();
-  if (_colors.num()>0)
+  if (_colors.size()>0)
     _colors.clear();
 
 
@@ -261,14 +262,16 @@ void Hopf::calculate_geometry() {
         
         ncross = cross(pt2-pt1, pt3-pt1);
         
-        _vertices += pt1;
-        _vertices += pt3;
-        _vertices += pt2;
+        _vertices.push_back(pt1);
+        _vertices.push_back(pt3);
+        _vertices.push_back(pt2);
         
-        _normals += ncross;
+	//        _normals += ncross;
+        _normals.push_back(ncross);
         
         //_colors += Wpt(_colorArray[ci%11][0],_colorArray[ci%11][1],_colorArray[ci%11][2]);
-        _colors += Wpt(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+	//        _colors += Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+        _colors.push_back(Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]));
         
         // Finished with the first triangle..................
         
@@ -297,14 +300,16 @@ void Hopf::calculate_geometry() {
         
         ncross = cross(pt2-pt1, pt3-pt1);
         
-        _vertices += pt1;
-        _vertices += pt3;
-        _vertices += pt2;
+        _vertices.push_back(pt1);
+        _vertices.push_back(pt3);
+        _vertices.push_back(pt2);
         
-        _normals += ncross;
+	//        _normals += ncross;
+        _normals.push_back(ncross);
         
         //_colors += Wpt(_colorArray[ci%11][0],_colorArray[ci%11][1],_colorArray[ci%11][2]);
-        _colors += Wpt(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+	//        _colors += Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+        _colors.push_back(Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]));
         // Finished with the second triangle..................	
       
 
@@ -319,15 +324,16 @@ void Hopf::calculate_geometry() {
 
 void Hopf::draw() {
 
-  int numTriangles = _normals.num();
-  assert(numTriangles == _colors.num());
-  assert(numTriangles*3 == _vertices.num());
+  int numTriangles = _normals.size();
+  assert(numTriangles == _colors.size());
+  assert(numTriangles*3 == _vertices.size());
 
   glMatrixMode(GL_MODELVIEW);
   
   glPushMatrix();
   //  glMultMatrixd(MathTranslate::instance()->ROOM_TO_WORLD().invert().matrix());
-  glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
+//  glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
+  std::cerr << "Hopf.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
 
   glTranslatef(-10,0,0);
 

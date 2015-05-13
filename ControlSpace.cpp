@@ -1,5 +1,5 @@
 
-#include "ControlSpace.H"
+#include "ControlSpace.h"
 #include "assert.h"
 
 //ControlSpace::ControlSpace(Torus *t, Hypercube *h, Hopf *hf) 
@@ -37,10 +37,10 @@ void ControlSpace::get_abc(double& oa, double& ob, double& oc)
 
 // Wand provides the world space line and uses that to set the internal
 // a,b,c values
-void ControlSpace::do_intersection(Wpt start, Wpt end) 
+void ControlSpace::do_intersection(Vector3 start, Vector3 end) 
 {
-  Wpt result;
-  Wpt pos;
+  Vector3 result;
+  Vector3 pos;
 
   //  cout<<"ControlSpace::do_intersection"<<start << "::" << end << endl;
   assert(_tetra);

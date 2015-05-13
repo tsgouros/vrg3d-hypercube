@@ -1,7 +1,7 @@
 
-#include "Hypercube.H"
+#include "Hypercube.h"
 
-#include "WorldTranslate.H"
+//#include "WorldTranslate.H"
 
 Hypercube::Hypercube() {
   
@@ -96,8 +96,8 @@ void Hypercube::calculate_geometry() {
   double x,y,u,v;
   double nx, ny, nu, nv;
 
-  Wpt pt1, pt2, pt3, pos;
-  Wvec norm1, norm2, ncross;
+  Vector3 pt1, pt2, pt3, pos;
+  Vector3 norm1, norm2, ncross;
 
   double x1,x2,x3,x4;
   double y1,y2,y3,y4;
@@ -107,18 +107,18 @@ void Hypercube::calculate_geometry() {
   double d,den;
   
 
-  if (_face_vertices.num()>0)
+  if (_face_vertices.size()>0)
     _face_vertices.clear();
-  if (_line_vertices.num()>0)
+  if (_line_vertices.size()>0)
     _line_vertices.clear();
 
 
-  if (_normals.num()>0) 
+  if (_normals.size()>0) 
     _normals.clear();
 
-  if (_face_colors.num()>0)
+  if (_face_colors.size()>0)
     _face_colors.clear();
-  if (_line_colors.num()>0)
+  if (_line_colors.size()>0)
     _line_colors.clear();
 
 
@@ -192,26 +192,26 @@ void Hypercube::calculate_geometry() {
         ncross = cross(pt2-pt1, pt3-pt1);
         
         if (j%2==0) { // planes
-        _face_vertices += pt1;
-        _face_vertices += pt3;
-        _face_vertices += pt2;
+	  _face_vertices.push_back(pt1);
+	  _face_vertices.push_back(pt3);
+	  _face_vertices.push_back(pt2);
 
-        _face_colors += Wpt(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+	  _face_colors.push_back(Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]));
         } 
         else { // lines
-          //          Wpt pos = (pt3 + pt1)/2.0;
-          pos = Wpt(pt1[0]+pt3[0], pt1[1]+pt3[1], pt1[2]+pt3[2]); 
+          //          Vector3 pos = (pt3 + pt1)/2.0;
+          pos = Vector3(pt1[0]+pt3[0], pt1[1]+pt3[1], pt1[2]+pt3[2]); 
           pos = pos / 2.0;
 
-          _line_vertices += pt1;
-          _line_vertices += pos;
-          _line_vertices += pt3;
-          _line_colors += Wpt(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+          _line_vertices.push_back(pt1);
+          _line_vertices.push_back(pos);
+          _line_vertices.push_back(pt3);
+          _line_colors.push_back(Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]));
         }
         
-        _normals += ncross;
+        _normals.push_back(ncross);
         
-        //_colors += Wpt(_colorArray[ci%11][0],_colorArray[ci%11][1],_colorArray[ci%11][2]);
+        //_colors += Vector3(_colorArray[ci%11][0],_colorArray[ci%11][1],_colorArray[ci%11][2]);
 
         
         // Finished with the first triangle..................
@@ -236,25 +236,25 @@ void Hypercube::calculate_geometry() {
         ncross = cross(pt2-pt1, pt3-pt1);
         
         if (j%2==0) { // planes
-          _face_vertices += pt3;
-          _face_vertices += pt2;
-          _face_vertices += pt1;
-          _face_colors += Wpt(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+          _face_vertices.push_back(pt3);
+          _face_vertices.push_back(pt2);
+          _face_vertices.push_back(pt1);
+          _face_colors.push_back(Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]));
         } 
         else { // lines
-          //          Wpt pos = (pt1 + pt2)/2.0; 
-          Wpt pos = Wpt(pt1[0]+pt2[0], pt1[1]+pt2[1], pt1[2]+pt2[2]);
+          //          Vector3 pos = (pt1 + pt2)/2.0; 
+          Vector3 pos = Vector3(pt1[0]+pt2[0], pt1[1]+pt2[1], pt1[2]+pt2[2]);
           pos = pos / 2.0;
           
-          _line_vertices += pt1;
-          _line_vertices += pt2;
-          _line_vertices += pos;
-          _line_colors += Wpt(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]);
+          _line_vertices.push_back(pt1);
+          _line_vertices.push_back(pt2);
+          _line_vertices.push_back(pos);
+          _line_colors.push_back(Vector3(_colorArray[ci][0],_colorArray[ci][1],_colorArray[ci][2]));
         }
         
-        _normals += ncross;
+        _normals.push_back(ncross);
         
-        //_colors += Wpt(_colorArray[ci%11][0],_colorArray[ci%11][1],_colorArray[ci%11][2]);
+        //_colors += Vector3(_colorArray[ci%11][0],_colorArray[ci%11][1],_colorArray[ci%11][2]);
 
         // Finished with the second triangle..................	
       
@@ -270,21 +270,22 @@ void Hypercube::calculate_geometry() {
 
 void Hypercube::draw() {
 
-  //  int numTriangles = _normals.num();
-  //  assert(numTriangles == _colors.num());
-  //  assert(numTriangles*3 == _face_vertices.num());
+  //  int numTriangles = _normals.size();
+  //  assert(numTriangles == _colors.size());
+  //  assert(numTriangles*3 == _face_vertices.size());
   
-  //  int numTriangles = (int)(_face_colors.num()/2.0);
-  int numTriangles = _face_colors.num();
+  //  int numTriangles = (int)(_face_colors.size()/2.0);
+  int numTriangles = _face_colors.size();
 
   //cout << "numTriangles is" << numTriangles << endl;
-  assert(_face_vertices.num()==_line_vertices.num());
+  assert(_face_vertices.size()==_line_vertices.size());
   
   glMatrixMode(GL_MODELVIEW);
   
   glPushMatrix();
   //  glMultMatrixd(MathTranslate::instance()->ROOM_TO_WORLD().invert().matrix());
-  glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
+  //glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix());
+  std::cerr << "Hypercube.cpp: VRG3D version of glMultMatrixd(MathTranslate::instance()->WORLD_TO_ROOM().matrix()) not implemented.." << std::endl;
   
   glTranslatef(5,0,0); // draw the hypercube off to the side
 

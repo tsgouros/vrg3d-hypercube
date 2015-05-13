@@ -1,12 +1,14 @@
 
-#include "Tetrahedron.H"
-#include "WorldTranslate.H"
+#include "Tetrahedron.h"
+//#include "WorldTranslate.h"
+
+#include <GL/glut.h>
 
 Tetrahedron::Tetrahedron() {
   
   initialize_coordinates();
-  world_offset = Wpt(0,0,0);
-  intersection_point = Wpt(0,0,0);
+  world_offset = Vector3(0,0,0);
+  intersection_point = Vector3(0,0,0);
   _u = new Utility();
 
 }
@@ -57,34 +59,34 @@ void Tetrahedron::initialize_coordinates()
   //          V  Y
 
 
-  //  left   = Wpt(leftx,   -lefty,    0);
-  //  right  = Wpt(rightx,  -righty,   0);
-  //  top    = Wpt(topx,    -topy,     0);
+  //  left   = Vector3(leftx,   -lefty,    0);
+  //  right  = Vector3(rightx,  -righty,   0);
+  //  top    = Vector3(topx,    -topy,     0);
 
-  //  origin = Wpt(xoffset, -yoffset,  0);
-  //  tip    = Wpt(origin[0], origin[1], tetra_height);
+  //  origin = Vector3(xoffset, -yoffset,  0);
+  //  tip    = Vector3(origin[0], origin[1], tetra_height);
 
-  left   = Wpt(leftx,   0, -lefty);
-  right  = Wpt(rightx,  0, -righty);
-  top    = Wpt(topx,    0, -topy);
+  left   = Vector3(leftx,   0, -lefty);
+  right  = Vector3(rightx,  0, -righty);
+  top    = Vector3(topx,    0, -topy);
   
-  origin = Wpt(xoffset,   0,            yoffset);
-  tip    = Wpt(origin[0], -tetra_height, origin[2]);
+  origin = Vector3(xoffset,   0,            yoffset);
+  tip    = Vector3(origin[0], -tetra_height, origin[2]);
 
-  center = Wpt(origin[0], -tetra_height/2.0, origin[2]);
+  center = Vector3(origin[0], -tetra_height/2.0, origin[2]);
   
-  last_abc = Wpt(0,0,0);
-  last_intersection_point = Wpt(0,0,0);
+  last_abc = Vector3(0,0,0);
+  last_intersection_point = Vector3(0,0,0);
 
 }
 
 
 void Tetrahedron::draw() 
 {
-  Wpt v0 = top;//   + Wvec(world_offset);
-  Wpt v1 = left;//  + Wvec(world_offset);
-  Wpt v2 = right;// + Wvec(world_offset);
-  Wpt v3 = tip;//   + Wvec(world_offset);
+  Vector3 v0 = top;//   + Vector3(world_offset);
+  Vector3 v1 = left;//  + Vector3(world_offset);
+  Vector3 v2 = right;// + Vector3(world_offset);
+  Vector3 v3 = tip;//   + Vector3(world_offset);
   
   //  glEnable(GL_BLEND);
   glMatrixMode(GL_MODELVIEW);
@@ -183,7 +185,7 @@ void Tetrahedron::draw()
   */
   
   glColor3f(1,1,1);
-  Wpt pt;
+  Vector3 pt;
   float aa = last_abc[0];
   float bb = last_abc[1];
   float cc = last_abc[2];
@@ -213,32 +215,35 @@ void Tetrahedron::draw()
   
 }
 
-bool Tetrahedron::intersect(Wpt start, Wpt end, Wpt* abc_result) 
+bool Tetrahedron::intersect(Vector3 start, Vector3 end, Vector3* abc_result) 
 {
+#if 1
+  return false;
+#else
   //  cout<<"Tetrahedron::intersect" << endl;
   
   assert(abc_result);
   
-  //  *abc_result = Wpt(0.0,0.0,0.0);
+  //  *abc_result = Vector3(0.0,0.0,0.0);
   
   // for its own draw routine..
   
-  Wpt tend = MathTranslate::instance()->ROOM_TO_WORLD() * end;
-  //  intersection_point = Wpt(0,0,0);
+  Vector3 tend = MathTranslate::instance()->ROOM_TO_WORLD() * end;
+  //  intersection_point = Vector3(0,0,0);
 
-  Wpt io_result;
+  Vector3 io_result;
 
   int result = inside_outside_test(tend, 0, &io_result);
   
   //cout<<"\t\t result of inside_outside_test is " << result << endl;
 
-  if (0==result) intersection_point_color = Wpt(1,1,1); // on surface white
-  else if (1==result) intersection_point_color = Wpt(1,1,0); // inside yellow
-  else if (2==result) intersection_point_color = Wpt(0,0,0); // outside black
+  if (0==result) intersection_point_color = Vector3(1,1,1); // on surface white
+  else if (1==result) intersection_point_color = Vector3(1,1,0); // inside yellow
+  else if (2==result) intersection_point_color = Vector3(0,0,0); // outside black
 
-  Wpt projected_point;
-  Wvec dirn;
-  Wpt new_pt, t_result;
+  Vector3 projected_point;
+  Vector3 dirn;
+  Vector3 new_pt, t_result;
   int rresult;
   
   switch(result) {
@@ -310,8 +315,8 @@ bool Tetrahedron::intersect(Wpt start, Wpt end, Wpt* abc_result)
     abc_result[0] = last_abc;
     intersection_point = last_intersection_point;
   }
-  
   return true;
+#endif
 }
 
 
@@ -323,7 +328,7 @@ bool Tetrahedron::intersect(Wpt start, Wpt end, Wpt* abc_result)
 // project will force the point P to get projected onto the surface of tetrahedron
 // abc_result is set ONLY if point is on the surface
 
-int Tetrahedron::inside_outside_test(Wpt P, int project, Wpt* get_abc_result) 
+int Tetrahedron::inside_outside_test(Vector3 P, int project, Vector3* get_abc_result) 
 {
 
   assert(get_abc_result);
@@ -331,7 +336,7 @@ int Tetrahedron::inside_outside_test(Wpt P, int project, Wpt* get_abc_result)
   float a,b,c,d;
   a=b=c=d=0;
   float D0, D1, D2, D3, D4;
-  Wpt P1, P2, P3, P4;
+  Vector3 P1, P2, P3, P4;
   
   P1 = top;
   P2 = left;
@@ -381,7 +386,7 @@ int Tetrahedron::inside_outside_test(Wpt P, int project, Wpt* get_abc_result)
     }
     
     //cout<<"Tetrahedron:: inside_outside returning" << a << "," << b << "," << c << endl;
-    get_abc_result[0] = Wpt(a,b,c);
+    get_abc_result[0] = Vector3(a,b,c);
 
     return 0;
   }
@@ -402,16 +407,16 @@ int Tetrahedron::inside_outside_test(Wpt P, int project, Wpt* get_abc_result)
 //   the tetrahedron, intersection result is provided in "result"
 // 0 if there is no intersection
 //
-int Tetrahedron::line_intersect(Wpt pt1, Wpt pt2, Wpt& result)
+int Tetrahedron::line_intersect(Vector3 pt1, Vector3 pt2, Vector3& result)
 {
-  Wpt tmp_pt = Wpt(0,0,0);
-  //  result = Wpt(0,0,0);
+  Vector3 tmp_pt = Vector3(0,0,0);
+  //  result = Vector3(0,0,0);
   
-  Wpt A, B, C;
-  Wvec AB, CA, normal, N;
-  Wvec AC, BC, Vline, CP;
-  Wpt centroid;
-  Wpt line_line_result;
+  Vector3 A, B, C;
+  Vector3 AB, CA, normal, N;
+  Vector3 AC, BC, Vline, CP;
+  Vector3 centroid;
+  Vector3 line_line_result;
   
   float t, t1, t2, t3;
   int min_t = -1;
@@ -461,13 +466,15 @@ int Tetrahedron::line_intersect(Wpt pt1, Wpt pt2, Wpt& result)
     //WTp3_norm(cross);
     //    WTp3_copy(cross, N);
     
-    N = cross(Wvec(AC),Wvec(BC));
-    N = N.normalize();
+    N = cross(Vector3(AC),Vector3(BC));
+//    N = N.normalize();
+    N = normalize(N);
     
     Vline = -1*(N);//    WTp3_set(Vline, -N[X], -N[Y], -N[Z]);
 
     CP = (C-pt2); //WTp3_subtract(C, pt2, CP); 
-    t = (N*CP) / (N*Vline);    //t = WTp3_dot(N, CP) / WTp3_dot(N, Vline) ;
+//    t = (N*CP) / (N*Vline);    //t = WTp3_dot(N, CP) / WTp3_dot(N, Vline) ;
+    t = (N.dot(CP)) / (Vline.dot(N));    //t = WTp3_dot(N, CP) / WTp3_dot(N, Vline) ;
     
     // check if t is within valid line
     
@@ -475,7 +482,7 @@ int Tetrahedron::line_intersect(Wpt pt1, Wpt pt2, Wpt& result)
       
     if ((t>=0)) {
       //      // if so calculate the point...
-      //tmp_pt = Wpt(Vline[0],Vline[1],Vline[2]);    // WTp3_copy(Vline, tmp_pt);
+      //tmp_pt = Vector3(Vline[0],Vline[1],Vline[2]);    // WTp3_copy(Vline, tmp_pt);
       //tmp_pt = t*tmp_pt; // WTp3_mults(tmp_pt, t);
       
       tmp_pt = pt2 + t*Vline; 
