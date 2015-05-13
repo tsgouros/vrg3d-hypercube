@@ -2,7 +2,9 @@ CPP = g++
 CPPFLAGS = -Wall -g
 LDFLAGS = 
 
-TARGET = chess demo hypercube
+TARGET =  hypercube
+
+VRPN_PATH = /gpfs/runtime/opt/vrpn/7.31/
 
 
 ### These lines are for access to the VRG3D and G3D installation
@@ -15,8 +17,8 @@ ifeq ($(shell if [ -d /research/graphics ] ; then echo 1; fi),1)
   EXTRA_LIBS = -L$(G)/install_linux/lib -L$(G)/install_linux/lib/vrg3d
 else
   # CCV - Granoff
-  EXTRA_INCLUDES = -I/share/cave/include
-  EXTRA_LIBS = -L/share/cave/lib
+  EXTRA_INCLUDES = -I${VRG3D_BASE}/include ${VRPN_PATH}/include
+  EXTRA_LIBS = -L${VRG3D_BASE}/lib -L${VRPN_PATH}/lib
 endif
 
 
@@ -33,11 +35,11 @@ LIB_DIRS = $(EXTRA_LIBS)
 LIBS = -Xlinker --start-group  -Xlinker -ldl  -Xlinker -lX11 -Xlinker \
 	-lXext  -Xlinker -lpthread  -Xlinker -lz  -Xlinker -ljpeg  -Xlinker \
 	-lpng  -Xlinker -lzip  -Xlinker -lSDL -Xlinker -lvrg3d  -Xlinker \
-	-lavutil  -Xlinker -lavformat  -Xlinker -lavcodec  -Xlinker -lGLG3Dd \
-	-Xlinker -lG3Dd -Xlinker -lGLU -Xlinker -lGL -Xlinker --end-group \
-	-lvrpn -lglut -lXmu
+	-lavutil  -Xlinker -lavformat  -Xlinker -lavcodec  -Xlinker -lGLG3D \
+	-Xlinker -lG3D -Xlinker -lGLU -Xlinker -lGL -Xlinker --end-group \
+	-lvrpn -lglut -lXmu -lmplEasyBlendSDK
 
-all: chess demo hypercube
+all:  hypercube
 
 chess: obj/chess.o obj/chess_demo.o
 	$(CPP) $(LDFLAGS) -o chess $^ $(LIB_DIRS) $(LIBS)

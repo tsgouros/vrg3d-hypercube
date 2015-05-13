@@ -1,2 +1,4 @@
-export G=/research/graphics/tools/linux
+export G=/gpfs/data/dhl/gfx/G
 export GARCH=linux
+export VRG3D_BASE=$G/install_linux
+

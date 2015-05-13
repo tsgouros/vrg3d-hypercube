@@ -44,6 +44,8 @@ typedef enum{
 class MyVRApp : public VRApp
 {
 private:
+  //    GFontRef          _font;
+
     ControlSpace *control;
 
     Torus *torus;
@@ -69,11 +71,9 @@ public:
      // Initialize the coordinate frame for the display.
     _virtualToRoomSpace = CoordinateFrame();
 
-    // The default starting point has the eye level with the chess
-    // board, which is confusing for the viewer on startup, and
-    // renders poorly too. Let's move the virtual space up a few units
-    // for a more sensible view.
-    _virtualToRoomSpace = CoordinateFrame(Vector3(0,2.0,0)) * _virtualToRoomSpace;
+    // Set initial viewpoint to be nice for hypercube
+    _virtualToRoomSpace = (CoordinateFrame(Vector3(0,1.5,-5))
+			   * _virtualToRoomSpace);
 
     // This is the background -- the color that appears where there is
     // nothing to render, and we'll use a nice soothing blue.
@@ -88,6 +88,9 @@ public:
 
     //  control = new ControlSpace(torus, hypercube, hopf);
     control = new ControlSpace();
+
+    //    control->set_position(0,2,0);  // john huffman's original position in YURT
+    control->set_position(0,1,-1.5);
 
     //    wandInt = new SimpleInt(control, this);
 
@@ -222,7 +225,29 @@ public:
       }
       else if (events[i]->getName() == "Wand_Joystick_Y")
       {   //cout << "Wand Joystick Y = " << events[i]->get1DData() << endl;
-          joystick_y = events[i]->get1DData();
+
+	// since only wand joystick available, getting creative to spread that
+	// functionality around.  here's how it works:
+	//   joystick up = fly forward (turn wand around to fly backward)
+	//   joystick down = toggle draw mode
+        //   joystick left/right = rotate world around user
+
+	double value = events[i]->get1DData();
+	value = -value;
+	if (value > 0)
+          joystick_y = value;
+	else {
+	  joystick_y = 0;
+	  
+	  static int is_pressed = false;
+	  const double threshold = 0.75;
+	  if (!is_pressed && value < -threshold) {
+	    is_pressed = true;
+	    toggle_drawmode();
+	  } else if (is_pressed && value > -threshold) {
+	    is_pressed =false;
+	  }
+	}
       }
       else if (events[i]->getName() == "Mouse_Pointer")
       {  static Vector2 lastPos;
@@ -313,6 +338,42 @@ public:
        }
     }
 
+    if (_font.notNull())
+      {
+        // This draws the position of the tracker on the screen
+        rd->pushState();
+        rd->disableLighting();
+
+	float font_size = 0.1;
+	float angle = 80;
+
+	CoordinateFrame rot = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(angle)));
+
+	_font->draw3D(rd,
+		      "Touch end of line from wand to wireframe sphere to change rendering parameters",
+		      (rot * CoordinateFrame(Vector3(0,-3.5,-8))),
+		      font_size,
+		      Color3::white());
+	_font->draw3D(rd,
+		      "Joystick left/right - rotate model",
+		      (rot * CoordinateFrame(Vector3(0,-3,-8))),
+		      font_size,
+		      Color3::white());
+	_font->draw3D(rd,
+		      "Joystick up - fly in direction wand is pointing",
+		      (rot * CoordinateFrame(Vector3(0,-2.5,-8))),
+		      font_size,
+		      Color3::white());
+	_font->draw3D(rd,
+		      "Joystick down - toggle render mode",
+		      (rot * CoordinateFrame(Vector3(0,-2,-8))),
+		      font_size,
+		      Color3::white());
+
+        rd->popState();
+      }
+
+
     Array<std::string> trackerNames = _trackerFrames.getKeys();
 
     for (int i=0;i<trackerNames.size();i++)
@@ -326,16 +387,18 @@ public:
 
             glDisable(GL_LIGHTING);
             glDisable(GL_TEXTURE_2D);
-            glLineWidth(4.0f);
-            glColor4f(1.0f,0.0f,0.0f,1.0f);
+	    //            glLineWidth(4.0f);
+	    //            glColor4f(1.0f,0.0f,0.0f,1.0f);
+            glLineWidth(10.0f); // YURT is high res-- made this thicker..
+            glColor4f(1.0f,1.0f,0.0f,1.0f); // yellow is easier to see than red..
             glBegin(GL_LINES);
             glVertex3f(trackerFrame.translation.x,
-                       trackerFrame.translation.y,
-                       trackerFrame.translation.z);
+		       trackerFrame.translation.y,
+		       trackerFrame.translation.z);
             glVertex3f(trackerFrame.translation.x + 1 * lookVector.x,
-                       trackerFrame.translation.y + 1 * lookVector.y,
-                       trackerFrame.translation.z + 1 * lookVector.z);
-            glEnd();
+		       trackerFrame.translation.y + 1 * lookVector.y,
+		       trackerFrame.translation.z + 1 * lookVector.z);
+	    glEnd();
 
             glPopAttrib();
 
@@ -450,7 +513,7 @@ public:
     rd->popState();
 
     rd->pushState();
-    glTranslatef(0.0, 2.0, 0.0);
+    //    glTranslatef(0.0, 2.0, 0.0);
 
        control->draw();
     rd->popState();

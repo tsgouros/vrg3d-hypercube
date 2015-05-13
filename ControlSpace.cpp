@@ -39,6 +39,14 @@ void ControlSpace::get_abc(double& oa, double& ob, double& oc)
 // a,b,c values
 void ControlSpace::do_intersection(Vector3 start, Vector3 end) 
 {
+  start.x -= _x;
+  start.y -= _y;
+  start.z -= _z;
+  end.x -= _x;
+  end.y -= _y;
+  end.z -= _z;
+
+
   Vector3 result;
   Vector3 pos;
 
@@ -63,9 +71,13 @@ void ControlSpace::do_intersection(Vector3 start, Vector3 end)
 //draw the tetrahedral control space at a fixed offset from the user head position
 void ControlSpace::draw() 
 {
+  glPushMatrix();
+  glTranslatef(_x,_y,_z);
+
   if (show_control_space)
     _tetra->draw();
-  
+
+  glPopMatrix();
 }
 
 bool ControlSpace::getVisibility() 
@@ -77,3 +89,11 @@ void ControlSpace::toggle_visibility()
 {
   show_control_space = !show_control_space;
 }
+
+void ControlSpace::set_position(double x, double y, double z)
+{
+  _x = x;
+  _y = y;
+  _z = z;
+}
+
